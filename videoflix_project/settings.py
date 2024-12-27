@@ -17,6 +17,9 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 # Lade Umgebungsvariablen aus der .env-Datei
 env_path = Path(__file__).resolve().parent.parent / '.env'
 load_dotenv(env_path)
