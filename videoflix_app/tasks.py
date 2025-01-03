@@ -6,9 +6,10 @@ from dotenv import load_dotenv
 # Lade Umgebungsvariablen aus der .env-Datei
 env_path = Path(__file__).resolve().parent.parent / '.env'
 load_dotenv(env_path)
+ffmpeg_path  = os.getenv('FFMPEG_PATH')   
 
 def convert720p(source):   
-    ffmpeg_path  = os.getenv('FFMPEG_PATH')       
+    # ffmpeg_path  = os.getenv('FFMPEG_PATH')       
     source_path = Path(source)  # Betriebssystemunabhängig
     new_file_name = source_path.with_name(f"{source_path.stem}_720p{source_path.suffix}")    
  
