@@ -1,0 +1,28 @@
+version: "3.8"  # Wähle eine passende Version von Docker Compose
+
+services:
+  # Django Service
+  web:
+    build: .
+    command: gunicorn --bind 0.0.0.0:8000 videoflix_project.wsgi:application
+    volumes:
+      - .:/usr/src/videoflix  # Stellt sicher, dass der Container immer den aktuellen Code hat
+      - static_volume:/usr/src/videoflix/staticfiles
+    ports:
+      - "8000:8000"  # Exponiert den Port 8000
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=videoflix_project.settings  # Sicherstellen, dass Django auf die richtige Settings-Datei zugreift
+      # Hier kannst du die Datenbank in der Django-Einstellung festlegen
+      - DATABASE_URL=sqlite:///db.sqlite3  # SQLite-Datenbank-URL
+      - REDIS_URL=redis://redis:6379  # Um sicherzustellen, dass der Redis-Host korrekt konfiguriert ist
+
+  # Redis Service (optional, wenn du Redis verwendest)
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"  # Redis Port
+
+volumes:
+  postgres_data:
+  static_volume:

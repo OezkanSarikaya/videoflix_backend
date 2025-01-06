@@ -4,8 +4,9 @@ from videoflix_app.tasks import convert720p
 from .models import Video
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-# from django_rq import enqueue
+
 import django_rq
+# from django_rq import enqueue
 
 
 @receiver(post_save, sender=Video)
@@ -14,9 +15,10 @@ def video_post_save(sender, instance, created, **kwargs):
     if created:
         print('New Video created')
         video_path = os.path.normpath(instance.video_file.path)
-        # queue = django_rq.get_queue('default', autocommit=True)
-        # queue.enqueue(convert720p, video_path)
-        convert720p(video_path)
+        queue = django_rq.get_queue('default', autocommit=True)
+        # queue.worker_cls.without_signal = True
+        queue.enqueue(convert720p, video_path)
+        # convert720p(video_path)
     else:
         print(f"Fehler: Datei {video_path} existiert nicht!")
 

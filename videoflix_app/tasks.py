@@ -13,7 +13,16 @@ def convert720p(source):
     source_path = Path(source)  # Betriebssystemunabhängig
     new_file_name = source_path.with_name(f"{source_path.stem}_720p{source_path.suffix}")    
  
-    cmd = f'"{ffmpeg_path }" -i "{source_path}" -s hd720 -c:v libx264 -crf 23 -c:a aac -strict -2 "{new_file_name}"'
-
+    # cmd = f'"{ffmpeg_path }" -i "{source_path}" -s hd720 -c:v libx264 -crf 23 -c:a aac -strict -2 "{new_file_name}"'
+    cmd = [
+        ffmpeg_path, 
+        "-i", str(source_path), 
+        "-s", "hd720", 
+        "-c:v", "libx264", 
+        "-crf", "23", 
+        "-c:a", "aac", 
+        "-strict", "-2", 
+        str(new_file_name)
+    ]
     run = subprocess.run(cmd, capture_output=True)
  
