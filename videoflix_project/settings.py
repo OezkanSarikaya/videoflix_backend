@@ -66,7 +66,7 @@ MIDDLEWARE = [
 
 RQ_QUEUES = {
     'default': {
-        'HOST': 'redis',
+        'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
         # 'USERNAME': 'some-user',
