@@ -12,15 +12,29 @@ import django_rq
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
     print('Video wurde hochgeladen')
+
+    # Überprüfen, ob das Video beim ersten Speichern (created) oder beim Update gespeichert wird
     if created:
         print('New Video created')
-        video_path = os.path.normpath(instance.video_file.path)
-        queue = django_rq.get_queue('default', autocommit=True)
-        # queue.worker_cls.without_signal = True
-        queue.enqueue(convert720p, video_path)
-        # convert720p(video_path)
-    else:
-        print(f"Fehler: Datei {video_path} existiert nicht!")
+
+        # Prüfen, ob das Video eine Datei enthält, bevor der Pfad gesetzt wird
+        if instance.video_file:
+            video_path = os.path.normpath(instance.video_file.path)
+            queue = django_rq.get_queue('default', autocommit=True)
+            queue.enqueue(convert720p, video_path)
+        else:
+            print(f"Fehler: Die Video-Datei für {instance.title} ist nicht vorhanden!")
+
+    else:  # Wenn das Video ein Update ist
+        print(f"Video {instance.title} wurde aktualisiert")
+
+        # Wenn beim Update ein neues Video hochgeladen wurde
+        if instance.video_file:
+            video_path = os.path.normpath(instance.video_file.path)
+            queue = django_rq.get_queue('default', autocommit=True)
+            queue.enqueue(convert720p, video_path)
+        else:
+            print(f"Fehler: Keine Video-Datei gefunden für das Update von {instance.title}")
 
 
 @receiver(post_delete, sender=Video)
