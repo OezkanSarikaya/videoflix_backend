@@ -1,4 +1,5 @@
 import os
+import shutil
 import django
 
 # Django-Projekt initialisieren
@@ -8,10 +9,14 @@ django.setup()
 from videoflix_app.models import Video, Genre
 from import_export.formats.base_formats import JSON
 
-# Pfad zur Demo-JSON-Datei
-demo_file = os.path.join('demo_media', 'demo.json')
+# Pfade definieren
+DEMO_MEDIA_PATH = os.path.join(os.getcwd(), 'demo_media')
+MEDIA_PATH = os.path.join(os.getcwd(), 'media')
 
-# Lösche alle bestehenden Videos und zugehörigen Genres
+# Pfad zur Demo-JSON-Datei
+demo_file = os.path.join(DEMO_MEDIA_PATH, 'demo.json')
+
+# Lösche alle bestehenden Videos und Genres
 Video.objects.all().delete()
 Genre.objects.all().delete()
 
@@ -32,9 +37,33 @@ for row in dataset.dict:
         genre, _ = Genre.objects.get_or_create(title=genre_title)
         video.genres.add(genre)
 
-    # Setze die Pfade zu den Mediendateien
-    video.video_file.name = f"demo_media/videos/{row['video_file']}"
-    video.thumbnail.name = f"demo_media/thumbnails/{row['thumbnail']}"
+    # Dateipfade aus der JSON übernehmen
+    video_file = row['video_file']
+    thumbnail = row['thumbnail']
+
+    # Erstelle den vollständigen Quell- und Zielpfad
+    video_file_src = os.path.join(DEMO_MEDIA_PATH, video_file)
+    video_file_dest = os.path.join(MEDIA_PATH, video_file)
+
+    thumbnail_src = os.path.join(DEMO_MEDIA_PATH, thumbnail)
+    thumbnail_dest = os.path.join(MEDIA_PATH, thumbnail)
+
+    # Kopiere die Dateien
+    if os.path.exists(video_file_src):
+        os.makedirs(os.path.dirname(video_file_dest), exist_ok=True)
+        shutil.copy(video_file_src, video_file_dest)
+        video.video_file.name = video_file
+    else:
+        print(f"Video-Datei nicht gefunden: {video_file_src}")
+
+    if os.path.exists(thumbnail_src):
+        os.makedirs(os.path.dirname(thumbnail_dest), exist_ok=True)
+        shutil.copy(thumbnail_src, thumbnail_dest)
+        video.thumbnail.name = thumbnail
+    else:
+        print(f"Thumbnail-Datei nicht gefunden: {thumbnail_src}")
+
+    # Speichere das Video
     video.save()
 
 print("Import abgeschlossen!")
