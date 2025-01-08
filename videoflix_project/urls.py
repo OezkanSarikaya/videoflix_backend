@@ -21,9 +21,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from debug_toolbar.toolbar import debug_toolbar_urls
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users/', include('users.urls')), 
+    # path('/', include('videoflix_app.urls')), 
+    path('api/', include('videoflix_app.urls')), 
     path('django-rq/', include('django_rq.urls')),
     # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),    

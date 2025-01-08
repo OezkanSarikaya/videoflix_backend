@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'django_rq',
     'import_export',
     'users',
+    # 'videoflix_app',
 ]
 
 REST_FRAMEWORK = {
