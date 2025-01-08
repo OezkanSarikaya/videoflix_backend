@@ -8,6 +8,12 @@ from django.http import HttpResponse
 from .serializers import UserRegistrationSerializer, LoginSerializer, JWTSerializer, PasswordResetSerializer
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.conf import settings
+from django.contrib.auth.forms import SetPasswordForm
+from rest_framework.views import APIView
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.db import IntegrityError
 
 User = get_user_model()
 
@@ -26,78 +32,89 @@ def activate_account(request, uidb64, token):
     except (TypeError, ValueError, OverflowError, user.DoesNotExist):
         return HttpResponse('Ungültiger Link', status=400)
 
-# User Registration View
-class UserRegistrationView(views.APIView):
-    permission_classes = [AllowAny]
-
+class UserRegistrationView(APIView):
+    permission_classes = [AllowAny] 
     def post(self, request, *args, **kwargs):
-        serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Account erstellt. Bitte überprüfe deine E-Mails, um deinen Account zu aktivieren."}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# Login View
-class LoginView(views.APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = authenticate(email=serializer.validated_data['email'], password=serializer.validated_data['password'])
-            if user is not None:
-                refresh = RefreshToken.for_user(user)
-                access_token = refresh.access_token
-                return Response({
-                    'access': str(access_token),
-                    'refresh': str(refresh),
-                })
-            return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# Password Reset
-class PasswordResetView(views.APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        serializer = PasswordResetSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
-            user = User.objects.filter(email=email).first()
-            if user:
-                token = default_token_generator.make_token(user)
-                uid = urlsafe_base64_encode(str(user.pk).encode()).decode()
-                send_mail(
-                    'Passwort zurücksetzen',
-                    render_to_string('email/reset_password_email.html', {
-                        'uid': uid,
-                        'token': token,
-                    }),
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email]
-                )
-                return Response({"message": "E-Mail für die Passwort-Wiederherstellung gesendet."}, status=status.HTTP_200_OK)
-            return Response({"error": "Benutzer nicht gefunden"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# Password Reset Confirm
-class PasswordResetConfirmView(views.APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        uid = request.data.get('uid')
-        token = request.data.get('token')
+        # Versuche, den Benutzer zu erstellen
         try:
-            uid = urlsafe_base64_decode(uid).decode()
-            user = User.objects.get(pk=uid)
-            if default_token_generator.check_token(user, token):
-                user.set_password(request.data['password'])
-                user.save()
-                return Response({"message": "Passwort erfolgreich zurückgesetzt."}, status=status.HTTP_200_OK)
-            return Response({"error": "Token ungültig oder abgelaufen."}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = UserRegistrationSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"message": "Account erfolgreich erstellt."}, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Fehler, wenn die E-Mail bereits registriert ist
+        except IntegrityError:
+            return Response({"detail": "Email already registered."}, status=status.HTTP_409_CONFLICT)
 
+        # Andere Fehler
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+class PasswordResetRequestView(APIView):
+    permission_classes = [AllowAny] 
+    """
+    Benutzer können ihre E-Mail-Adresse eingeben und erhalten einen Reset-Link per E-Mail.
+    """
+    def post(self, request):
+        email = request.data.get('email')
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'detail': 'Es gibt keinen Benutzer mit dieser E-Mail-Adresse.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Generiere Token und uid
+        uid = urlsafe_base64_encode(str(user.pk).encode())
+        token = default_token_generator.make_token(user)
+
+        # Erstelle den Aktivierungs-Link
+        # reset_link = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
+        reset_link = f"http://localhost:8000/api/users/password_reset/confirm/{uid}/{token}/"
+        # Sende den Link per E-Mail
+        subject = "Passwort zurücksetzen"
+        message = render_to_string('password_reset_email.html', {
+            'user': user,
+            'reset_link': reset_link,
+        })
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+
+        return Response({"message": "Passwort-Zurücksetzungslink wurde gesendet!"}, status=status.HTTP_200_OK)
+
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny] 
+    def get(self, request, uidb64, token, *args, **kwargs):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = get_user_model().objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+            return Response({"detail": "Ungültiger Token oder Benutzer."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not default_token_generator.check_token(user, token):
+            return Response({"detail": "Token ist ungültig oder abgelaufen."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Hier könnte ein Frontend-Template verwendet werden, um das neue Passwort zu setzen
+        # Oder du sendest ein Formular zurück, um es im Frontend darzustellen
+        return render(request, 'users/password_reset_confirm.html', {'uid': uidb64, 'token': token})
+
+    def post(self, request, uidb64, token, *args, **kwargs):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = get_user_model().objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+            return Response({"detail": "Ungültiger Token oder Benutzer."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not default_token_generator.check_token(user, token):
+            return Response({"detail": "Token ist ungültig oder abgelaufen."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Das neue Passwort wird vom Frontend übermittelt
+        form = SetPasswordForm(user, data=request.data)
+        if form.is_valid():
+            form.save()
+            return Response({"detail": "Passwort erfolgreich zurückgesetzt."}, status=status.HTTP_200_OK)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
