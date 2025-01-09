@@ -14,6 +14,8 @@ from rest_framework.views import APIView
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.db import IntegrityError
+from django.http import JsonResponse
+from django.shortcuts import redirect
 
 User = get_user_model()
 
@@ -26,7 +28,7 @@ def activate_account(request, uidb64, token):
         if token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-            return HttpResponse('Account erfolgreich aktiviert!')
+            return JsonResponse({"message": "Account erfolgreich aktiviert!"})
         else:
             return HttpResponse('Token ist ungültig', status=400)
     except (TypeError, ValueError, OverflowError, user.DoesNotExist):
@@ -74,7 +76,11 @@ class PasswordResetRequestView(APIView):
 
         # Erstelle den Aktivierungs-Link
         # reset_link = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
-        reset_link = f"http://localhost:8000/api/users/password_reset/confirm/{uid}/{token}/"
+        # reset_link = f"http://localhost:8000/api/users/password_reset/confirm/{uid}/{token}/"
+        reset_link = f"http://localhost:4200/reset-password/{uid}/{token}/"
+        # reset_link = f"http://localhost:4200/reset-password?uid={uidb64}&token={token}"
+
+        
         # Sende den Link per E-Mail
         subject = "Passwort zurücksetzen"
         message = render_to_string('password_reset_email.html', {
@@ -97,10 +103,7 @@ class PasswordResetConfirmView(APIView):
 
         if not default_token_generator.check_token(user, token):
             return Response({"detail": "Token ist ungültig oder abgelaufen."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Hier könnte ein Frontend-Template verwendet werden, um das neue Passwort zu setzen
-        # Oder du sendest ein Formular zurück, um es im Frontend darzustellen
-        return render(request, 'users/password_reset_confirm.html', {'uid': uidb64, 'token': token})
+        return Response({"detail": "Token ist gültig."}, status=status.HTTP_200_OK)
 
     def post(self, request, uidb64, token, *args, **kwargs):
         try:
