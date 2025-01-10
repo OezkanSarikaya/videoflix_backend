@@ -15,7 +15,6 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.http import JsonResponse
-from django.shortcuts import redirect
 
 User = get_user_model()
 
@@ -55,8 +54,6 @@ class UserRegistrationView(APIView):
 
 
 
-
-
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny] 
     """
@@ -73,13 +70,7 @@ class PasswordResetRequestView(APIView):
         # Generiere Token und uid
         uid = urlsafe_base64_encode(str(user.pk).encode())
         token = default_token_generator.make_token(user)
-
-        # Erstelle den Aktivierungs-Link
-        # reset_link = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
-        # reset_link = f"http://localhost:8000/api/users/password_reset/confirm/{uid}/{token}/"
         reset_link = f"http://localhost:4200/reset-password/{uid}/{token}/"
-        # reset_link = f"http://localhost:4200/reset-password?uid={uidb64}&token={token}"
-
         
         # Sende den Link per E-Mail
         subject = "Passwort zurücksetzen"
