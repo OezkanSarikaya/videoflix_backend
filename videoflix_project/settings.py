@@ -35,7 +35,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = ['127.0.0.1','localhost', 'https://videoflix.oezkan-sarikaya.de/']
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Nur zum Testen
 # Zum echten Versenden
@@ -147,11 +147,13 @@ INTERNAL_IPS = [
 CSRF_TRUSTED_ORIGINS = [
   'http://127.0.0.1:4200',
   'http://localhost:4200',
+  'https://videoflix.oezkan-sarikaya.de/'
 ]
 
 CORS_ALLOWED_ORIGINS = [
   'http://127.0.0.1:4200',
   'http://localhost:4200',
+  'https://videoflix.oezkan-sarikaya.de/'
 ]
 
 CACHES = {
