@@ -2,7 +2,7 @@
     {
         "title": "Rhythms of Friendship",
         "description": "A beautiful film about ballet and friendships",
-        "video_file": "videos/rhythms-of-friendship.mp4",
+        "video_file": "videos/rhythms-of-friendship-with-sound.mp4",
         "thumbnail": "thumbnails/rhythms-of-friendship.png",
         "created_at": "2025-01-07",
         "genres": [
@@ -13,7 +13,7 @@
     {
         "title": "Majestic Whales",
         "description": "A breathtaking tale that centers around the awe-inspiring presence of a majestic whale, this film explores the deep connection between nature and humanity. The whale, a symbol of grace and power, journeys through vast oceans, revealing the beauty and mystery of the underwater world. As it navigates through its environment, the story unfolds to touch on themes of survival, conservation, and the delicate balance of marine ecosystems, offering viewers a poignant reminder of the wonders of nature.",
-        "video_file": "videos/majestic-whales.mp4",
+        "video_file": "videos/majestic-whales-with-sound.mp4",
         "thumbnail": "thumbnails/majestic-whales.png",
         "created_at": "2025-01-07",
         "genres": [
@@ -24,7 +24,7 @@
     {
         "title": "Whispering Shadows",
         "description": "\"Whispering Shadows\" is a gripping supernatural thriller that follows a young woman who moves to a remote village, only to uncover a dark secret tied to mysterious whispers in the night. As she delves deeper into the village's history, she finds herself entangled in a web of ancient curses, ghostly apparitions, and unsettling truths. With every passing day, the line between the living and the dead blurs, and she must confront the chilling shadows that seem to follow her every step.",
-        "video_file": "videos/whispering-shadows.mp4",
+        "video_file": "videos/whispering-shadows-with-sound.mp4",
         "thumbnail": "thumbnails/whispering-shadows.png",
         "created_at": "2025-01-07",
         "genres": [
@@ -35,7 +35,7 @@
     {
         "title": "Baby\u00b4s secret language",
         "description": "\"Baby's Secret Language\" is a fascinating documentary that explores the early stages of human communication, focusing on how infants develop their unique ways of expressing emotions and needs before they can speak. Through groundbreaking research and intimate footage, the film delves into the subtle cues\u2014such as facial expressions, sounds, and gestures\u2014that form the foundation of language. It offers a deeper understanding of how babies begin to connect with the world around them and the unspoken",
-        "video_file": "videos/babys-secret-language.mp4",
+        "video_file": "videos/babys-secret-language-with-sound.mp4",
         "thumbnail": "thumbnails/babys-secret-language.png",
         "created_at": "2025-01-07",
         "genres": [
@@ -46,7 +46,7 @@
     {
         "title": "World of Wonders",
         "description": "\"World of Wonders\" is a captivating documentary that takes viewers on a journey through some of the most iconic and awe-inspiring landmarks on the planet. Featuring the majestic Taj Mahal, the film showcases the architectural splendor and cultural significance of this wonder, along with other global marvels. Through stunning visuals and insightful commentary, the documentary explores the stories behind these masterpieces, their historical context, and the lasting impact they have on humanity's s",
-        "video_file": "videos/world-of-wonders.mp4",
+        "video_file": "videos/world-of-wonders-with-sound.mp4",
         "thumbnail": "thumbnails/world-of-wonders.png",
         "created_at": "2025-01-07",
         "genres": [
@@ -57,7 +57,7 @@
     {
         "title": "48 hours to survive",
         "description": "A dramatic thriller that follows a man who is kidnapped and given a chilling ultimatum: survive for 48 hours or face certain death. As he fights to escape his captors and unravel the mystery behind his abduction, he discovers that every decision he makes brings him closer to a deadly game with no rules. With time running out, he must rely on his wits and resourcefulness to outsmart those who hold him captive, while uncovering secrets that could change his life forever",
-        "video_file": "videos/48-hours-to-survive.mp4",
+        "video_file": "videos/48-hours-to-survive-with-sound.mp4",
         "thumbnail": "thumbnails/48-hours-to-survive.png",
         "created_at": "2025-01-07",
         "genres": [
@@ -68,7 +68,7 @@
     {
         "title": "Chronicle of a crime",
         "description": "A gripping dramatic thriller that unravels the complex web of events surrounding a high-profile crime. As an investigation intensifies, secrets are exposed, and the line between justice and revenge becomes dangerously blurred. Through a series of tense and emotional moments, the film delves into the lives of those involved, exploring the consequences of choices, the morality of justice, and the deep psychological toll of being connected to a crime. With each twist and turn, the truth becomes",
-        "video_file": "videos/chronicle-of-a-crime.mp4",
+        "video_file": "videos/chronicle-of-a-crime-with-sound.mp4",
         "thumbnail": "thumbnails/chronicle-of-a-crime.png",
         "created_at": "2025-01-07",
         "genres": [
@@ -78,7 +78,7 @@
     {
         "title": "Breakout",
         "description": "In a high-security prison, a wrongly convicted man formulates a             meticulous plan to break out and prove his innocence. He must             navigate a web of alliances and betrayals to reclaim his freedom and expose the truth.",
-        "video_file": "videos/breakout.mp4",
+        "video_file": "videos/breakout-with-sound.mp4",
         "thumbnail": "thumbnails/breakout.png",
         "created_at": "2025-01-07",
         "genres": [
@@ -88,7 +88,7 @@
     {
         "title": "When i met you",
         "description": "a heartwarming love story about a young woman and a man who share a deep passion for riding bikes. Their paths cross one fateful day during a cycling event, sparking an instant connection. As they embark on exciting rides together, their bond grows stronger, revealing shared dreams, personal challenges, and the freedom they find on the open road. Through the ups and downs of life, their love blossoms, showing how sometimes the journey we take can lead us to the person we were meant to be with.",
-        "video_file": "videos/when-i-met-you.mp4",
+        "video_file": "videos/when-i-met-you-with-sound.mp4",
         "thumbnail": "thumbnails/when-i-met-you.png",
         "created_at": "2025-01-07",
         "genres": [
@@ -98,7 +98,7 @@
     {
         "title": "Hate you?",
         "description": "a delightful romantic comedy that follows a couple who can\u2019t stand each other at first. Constantly clashing over their differences, they seem like complete opposites\u2014until unexpected circumstances force them to spend more time together. As they navigate their way through misunderstandings and growing tensions, they begin to see each other in a new light. Slowly, their animosity turns into love, and what started as a bitter rivalry blossoms into a passionate romance, leading to a heartwarming and",
-        "video_file": "videos/hate-you.mp4",
+        "video_file": "videos/hate-you-with-sound.mp4",
         "thumbnail": "thumbnails/hate-you.png",
         "created_at": "2025-01-07",
         "genres": [

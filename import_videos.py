@@ -6,7 +6,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'videoflix_project.settings')
 django.setup()
 
-from videoflix_app.models import Video, Genre
+from videoflix_app.models import Video, Genre, VideoProgress
 from import_export.formats.base_formats import JSON
 
 # Pfade definieren
@@ -19,6 +19,7 @@ demo_file = os.path.join(DEMO_MEDIA_PATH, 'demo.json')
 # Lösche alle bestehenden Videos und Genres
 Video.objects.all().delete()
 Genre.objects.all().delete()
+VideoProgress.objects.all().delete()
 
 # Importiere die Demo-Daten
 with open(demo_file, 'r') as f:
