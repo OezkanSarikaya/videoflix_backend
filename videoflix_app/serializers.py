@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Video, Genre, VideoProgress
+from .models import Video, Genre
 
 
 class VideoSerializer(serializers.ModelSerializer):
@@ -14,9 +14,3 @@ class GenreWithVideosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = ["title", "videos"]
-
-
-class VideoProgressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = VideoProgress
-        fields = ["user", "video", "progress", "updated_at"]
