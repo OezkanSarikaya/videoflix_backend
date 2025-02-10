@@ -34,7 +34,7 @@ class VideoUpdateView(APIView):
         serializer = VideoSerializer(video, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()  # Video aktualisieren
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -54,33 +54,42 @@ class VideoListView(generics.ListAPIView):
     ]  # Nur authentifizierte Benutzer dürfen zugreifen
 
 
+# class VideoDetailView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, id, format=None):
+#         try:
+#             video = Video.objects.get(id=id)  # Hole Video anhand der ID
+#             # Hier die Daten aus dem Video-Objekt formatieren
+#             data = {
+#                 "id": video.id,
+#                 "title": video.title,
+#                 "description": video.description,
+#                 "video_file": video.video_file.url,
+#                 "thumbnail": video.thumbnail.url,
+#                 "created_at": video.created_at,
+#             }
+#             return Response(data)
+#         except Video.DoesNotExist:
+#             return Response(
+#                 {"error": "Video not found"}, status=status.HTTP_404_NOT_FOUND
+#             )
+
 class VideoDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id, format=None):
-        try:
-            video = Video.objects.get(id=id)  # Hole Video anhand der ID
-            # Hier die Daten aus dem Video-Objekt formatieren
-            data = {
-                "id": video.id,
-                "title": video.title,
-                "description": video.description,
-                "video_file": video.video_file.url,
-                "thumbnail": video.thumbnail.url,
-                "created_at": video.created_at,
-            }
-            return Response(data)
-        except Video.DoesNotExist:
-            return Response(
-                {"error": "Video not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+        video = get_object_or_404(Video, id=id)  # Holt das Video oder gibt automatisch 404 zurück
 
-
-# class VideoAdminViewSet(ModelViewSet):
-#     queryset = Video.objects.all()
-#     serializer_class = VideoSerializer
-#     permission_classes = [IsAdminOrReadOnly]
-#     # permission_classes = [IsAuthenticated]
+        data = {
+            "id": video.id,
+            "title": video.title,
+            "description": video.description,
+            "video_file": video.video_file.url if video.video_file else None,
+            "thumbnail": video.thumbnail.url if video.thumbnail else None,
+            "created_at": video.created_at,
+        }
+        return Response(data)
 
 
 class GenreVideoListView(APIView):
@@ -113,13 +122,10 @@ class VideoProgressDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, video_id, *args, **kwargs):
-        # Abrufen des Fortschritts eines Benutzers für das angegebene Video
-        video = get_object_or_404(Video, id=video_id)
-        try:
-            progress = VideoProgress.objects.get(user=request.user, video=video)
-            return Response({"progress": progress.progress})
-        except VideoProgress.DoesNotExist:
-            return Response({"progress": 0}, status=status.HTTP_200_OK)
+        video = get_object_or_404(Video, id=video_id)  # Holt das Video oder gibt 404 zurück
+        progress = VideoProgress.objects.filter(user=request.user, video=video).first()
+
+        return Response({"progress": progress.progress if progress else 0}, status=status.HTTP_200_OK)
 
 
 class VideoProgressListView(APIView):

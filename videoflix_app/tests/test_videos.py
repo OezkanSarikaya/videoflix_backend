@@ -36,6 +36,14 @@ class VideoTests(APITestCase):
             video_file="test.mp4",
             thumbnail="test.jpg",
         )
+
+        self.invalid_video_data = {
+            "description": "Ein tolles Video",
+            "video_file": None,
+            "thumbnail": None,
+            "genres": [],  # Falls Genres erforderlich sind, könnte das auch ein Fehler auslösen
+        }
+
         self.video.genres.set([self.genre])
 
         self.video_progress = VideoProgress.objects.create(
@@ -97,7 +105,6 @@ class VideoTests(APITestCase):
 
     def test_list_videos_regular_user(self):
         """GET /videos mit Authentifizierung → 200"""
-        # self.client.force_authenticate(user=self.user)
         self.client.login(email="user@example.com", password="userpassword")
         url = reverse("video_list")
         response = self.client.get(url)
@@ -130,6 +137,14 @@ class VideoTests(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_video_create_bad_request(self):
+        # Teste die Erstellung eines Videos als Admin
+        self.client.login(email="admin@example.com", password="adminpassword")
+        response = self.client.post(
+            self.url + "create/", self.invalid_video_data, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_create_video_unauthenticated(self):
         # Teste die Erstellung eines Videos ohne Authentifizierung
         response = self.client.post(
@@ -156,6 +171,16 @@ class VideoTests(APITestCase):
             f"{self.url}{video.id}/update/", update_data, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_video_authenticated_bad_request(self):
+        # Teste das Aktualisieren eines Videos als Admin
+        video = Video.objects.create(**self.video_data)
+        update_data = {"title": ""}
+        self.client.login(email="admin@example.com", password="adminpassword")
+        response = self.client.put(
+            f"{self.url}{video.id}/update/", update_data, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_video_unauthenticated(self):
         # Teste das Aktualisieren eines Videos ohne Authentifizierung
@@ -199,3 +224,17 @@ class VideoTests(APITestCase):
         self.assertEqual(
             response.status_code, status.HTTP_403_FORBIDDEN
         )  # Nur Admins dürfen
+
+    def test_genre_str(self):
+        """Testet die __str__ Methode für Genres mit einem Titel"""
+        self.assertEqual(str(self.genre), "Action")
+
+    def test_video_str(self):
+        """Testet die __str__ Methode für Genres mit einem Titel"""
+        video = Video.objects.create(title="Test Video")
+        self.assertEqual(str(video), "Test Video")
+
+    def test_video_progress_str_method(self):
+        """Testet die __str__-Methode von VideoProgress"""
+        expected_str = f"Progress of {self.regular_user} for video {self.video}"
+        self.assertEqual(str(self.video_progress), expected_str)

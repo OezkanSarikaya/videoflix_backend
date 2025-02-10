@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
 from rest_framework import status, views
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -20,6 +22,14 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.http import JsonResponse
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(env_path)
+
+
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 User = get_user_model()
 
@@ -88,18 +98,24 @@ class PasswordResetRequestView(APIView):
         # Generiere Token und uid
         uid = urlsafe_base64_encode(str(user.pk).encode())
         token = default_token_generator.make_token(user)
-        reset_link = f"http://localhost:4200/reset-password/{uid}/{token}/"
+        reset_link = f"{FRONTEND_URL}reset-password/{uid}/{token}/" 
 
-        # Sende den Link per E-Mail
         subject = "Passwort zurücksetzen"
-        message = render_to_string(
+        
+        html_message = render_to_string(
             "password_reset_email.html",
             {
                 "user": user,
                 "reset_link": reset_link,
             },
         )
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+        plain_message = strip_tags(html_message)  # Entfernt HTML-Tags für die Text-Version
+
+        email = EmailMultiAlternatives(
+            subject, plain_message, settings.DEFAULT_FROM_EMAIL, [user.email]
+        )
+        email.attach_alternative(html_message, "text/html")  # HTML-Version hinzufügen
+        email.send()
 
         return Response(
             {"message": "Passwort-Zurücksetzungslink wurde gesendet!"},

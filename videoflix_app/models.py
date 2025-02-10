@@ -14,7 +14,7 @@ class Genre(models.Model):
         constraints = [UniqueConstraint(Lower("title"), name="unique_title_ci")]
 
     def __str__(self):
-        return self.title
+        return self.title 
 
 
 class Video(models.Model):
