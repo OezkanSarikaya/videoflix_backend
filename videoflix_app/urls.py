@@ -20,6 +20,7 @@ urlpatterns = [
     path('videos/create/', VideoCreateView.as_view(), name='video_create'), 
     path('videos/<int:id>/update/', VideoUpdateView.as_view(), name='video_update'), 
     path('videos/<int:id>/delete/', VideoDeleteView.as_view(), name='video_delete'),
+    
     path("genres/videos/", GenreVideoListView.as_view(), name="genre_video_list"),
     # Endpunkt zum Speichern des Fortschritts (POST-Anfrage)
     path("video-progress/", VideoProgressView.as_view(), name="video-progress"),

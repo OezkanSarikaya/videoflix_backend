@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from users.models import CustomUser
-from ..models import Video
+from ..models import Video, Genre, VideoProgress
 from django.urls import reverse
 
 
@@ -28,14 +28,72 @@ class VideoTests(APITestCase):
             "thumbnail": None,  # Optional, je nach deinem Modell
         }
 
+        self.genre = Genre.objects.create(title="Action")
+
         self.video = Video.objects.create(
             title="Test Video",
             description="Ein Testvideo",
             video_file="test.mp4",
             thumbnail="test.jpg",
         )
+        self.video.genres.set([self.genre])
+
+        self.video_progress = VideoProgress.objects.create(
+            user=self.regular_user, video=self.video, progress=50
+        )
 
         self.url = "/api/videos/"
+        self.genre_videos_url = "/api/genres/videos/"
+        self.video_progress_url = "/api/video-progress/"
+        self.video_progress_detail_url = f"/api/video-progress/{self.video.id}/"
+        self.video_progress_list_url = "/api/video-progress-list/"
+
+    def test_genre_videos_authenticated(self):
+        """GET /genres/videos/ → Erfolgreich für authentifizierte Nutzer"""
+        self.client.login(username="user@example.com", password="userpassword")
+        response = self.client.get(self.genre_videos_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_genre_videos_unauthenticated(self):
+        """GET /genres/videos/ → Verweigert für nicht angemeldete Nutzer"""
+        response = self.client.get(self.genre_videos_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_save_video_progress_authenticated(self):
+        """POST /video-progress/ → Speichert Fortschritt für authentifizierte Nutzer"""
+        self.client.login(username="user@example.com", password="userpassword")
+        data = {"video": self.video.id, "progress": 80}
+        response = self.client.post(self.video_progress_url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_save_video_progress_unauthenticated(self):
+        """POST /video-progress/ → Verweigert für nicht angemeldete Nutzer"""
+        data = {"video": self.video.id, "progress": 80}
+        response = self.client.post(self.video_progress_url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_video_progress_authenticated(self):
+        """GET /video-progress/<video_id>/ → Gibt Fortschritt für authentifizierte Nutzer zurück"""
+        self.client.login(username="user@example.com", password="userpassword")
+        response = self.client.get(self.video_progress_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["progress"], 50)  # Fortschritt sollte 50 sein
+
+    def test_get_video_progress_unauthenticated(self):
+        """GET /video-progress/<video_id>/ → Verweigert für nicht angemeldete Nutzer"""
+        response = self.client.get(self.video_progress_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_video_progress_list_authenticated(self):
+        """GET /video-progress-list/ → Gibt Liste zurück für authentifizierte Nutzer"""
+        self.client.login(username="user@example.com", password="userpassword")
+        response = self.client.get(self.video_progress_list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_video_progress_list_unauthenticated(self):
+        """GET /video-progress-list/ → Verweigert für nicht angemeldete Nutzer"""
+        response = self.client.get(self.video_progress_list_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_videos_regular_user(self):
         """GET /videos mit Authentifizierung → 200"""
