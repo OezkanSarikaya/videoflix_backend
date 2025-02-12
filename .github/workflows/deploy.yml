@@ -13,6 +13,10 @@ jobs:
       - name: Code aus dem Repository holen
         uses: actions/checkout@v4
 
+      - name: Umgebungsvariablen setzen
+        run: |
+          echo "DEBUG=${{ secrets.DEBUG }}" >> $GITHUB_ENV
+
       - name: SSH Verbindung aufbauen und Deploy-Skript ausführen
         uses: appleboy/ssh-action@v1.0.3
         with:
