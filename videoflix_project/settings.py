@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta  # import this library top of the settings.py file
 import os
-import psycopg2
+# import psycopg2
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +24,8 @@ MEDIA_URL = "/media/"
 
 # Lade Umgebungsvariablen aus der .env-Datei
 env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(env_path)
+if env_path.exists():
+    load_dotenv(env_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -34,7 +35,8 @@ load_dotenv(env_path)
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG") == "True"
+# DEBUG = os.getenv("DEBUG") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "https://videoflix.oezkan-sarikaya.de/"]
 
