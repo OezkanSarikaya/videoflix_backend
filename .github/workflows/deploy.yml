@@ -1,0 +1,30 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main  # oder dein Hauptbranch, falls er anders heißt
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code aus dem Repository holen
+        uses: actions/checkout@v4
+
+      - name: SSH Verbindung aufbauen und Deploy-Skript ausführen
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |            
+            cd /home/oezkan/projects/videoflix_backend
+            git pull origin main  # oder dein Branch
+            source env/bin/activate  # Virtuelle Umgebung aktivieren
+            pip install -r requirements.txt  # Abhängigkeiten aktualisieren
+            python manage.py migrate  # Datenbank-Migrationen ausführen
+            python manage.py collectstatic --noinput  # Statische Dateien sammeln
+            systemctl restart gunicorn  # Gunicorn neu starten
+            systemctl restart nginx  # Nginx neu starten (falls nötig)
