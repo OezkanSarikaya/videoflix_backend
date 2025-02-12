@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from datetime import timedelta  # import this library top of the settings.py file
 import os
 
-print(f"DEBUG value from environment: {os.getenv('DEBUG')}")
+print(f"DEBUG Wert from environment: {os.getenv('DEBUG')}")
 
 
 # import psycopg2
