@@ -3,6 +3,7 @@ asgiref==3.8.1
 async-timeout==5.0.1
 click==8.1.8
 colorama==0.4.6
+coverage==7.6.11
 diff-match-patch==20241021
 Django==5.1.4
 django-allauth==65.3.1
@@ -13,10 +14,16 @@ django-redis==5.4.0
 django-rq==2.10.2
 djangorestframework==3.15.2
 djangorestframework_simplejwt==5.4.0
+exceptiongroup==1.2.2
 gunicorn==23.0.0
+iniconfig==2.0.0
 packaging==24.2
+pluggy==1.5.0
 psycopg2-binary==2.9.10
 PyJWT==2.10.1
+pytest==8.3.4
+pytest-cov==6.0.0
+pytest-django==4.9.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 redis==5.2.1
@@ -25,6 +32,7 @@ six==1.17.0
 sqlparse==0.5.3
 tablib==3.7.0
 times==0.7
+tomli==2.2.1
 types-python-dateutil==2.9.0.20241206
 typing_extensions==4.12.2
 tzdata==2024.2
