@@ -1,4 +1,4 @@
-name: Deploy Backend
+name: Test & Deploy Backend
 
 on:
   push:
@@ -6,17 +6,37 @@ on:
       - main  # oder dein Hauptbranch, falls er anders heißt      
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Code aus dem Repository holen
         uses: actions/checkout@v4
 
-      - name: Umgebungsvariablen setzen
+      - name: Python-Umgebung einrichten
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Abhängigkeiten installieren
         run: |
-          echo "DEBUG=${{ secrets.DEBUG }}" >> $GITHUB_ENV
-          echo "DEBUG is set to ${{ secrets.DEBUG }}"
+          python -m venv env
+          source env/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Pytest ausführen
+        run: |
+          source env/bin/activate
+          pytest --disable-warnings --maxfail=1
+
+  deploy:
+    needs: test  # Deployment nur ausführen, wenn Tests erfolgreich sind
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code aus dem Repository holen
+        uses: actions/checkout@v4
 
       - name: SSH Verbindung aufbauen und Deploy-Skript ausführen
         uses: appleboy/ssh-action@v1.0.3
@@ -25,14 +45,11 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |        
-            echo "DEBUG in SSH Session: $DEBUG"
-            export DEBUG=${{ secrets.DEBUG }} 
-            echo "DEBUG variable is now: $DEBUG"   
             cd /home/oezkan/projects/videoflix_backend
-            git pull origin main  # oder dein Branch
-            source env/bin/activate  # Virtuelle Umgebung aktivieren
-            pip install -r requirements.txt  # Abhängigkeiten aktualisieren
-            python manage.py migrate  # Datenbank-Migrationen ausführen
-            python manage.py collectstatic --noinput  # Statische Dateien sammeln
-            systemctl restart gunicorn  # Gunicorn neu starten
-            systemctl restart nginx  # Nginx neu starten (falls nötig)
+            git pull origin main
+            source env/bin/activate
+            pip install -r requirements.txt
+            python manage.py migrate
+            python manage.py collectstatic --noinput
+            systemctl restart gunicorn
+            systemctl restart nginx
