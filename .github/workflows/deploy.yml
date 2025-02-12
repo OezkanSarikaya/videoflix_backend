@@ -47,7 +47,7 @@ jobs:
           pytest --disable-warnings --maxfail=1
 
   deploy:
-    needs: test  # Deployment nur ausführen, wenn Tests erfolgreich sind
+    needs: test  # Deployment nur ausführen, wenn Tests erfolgreich sind  
     runs-on: ubuntu-latest
 
     steps:
