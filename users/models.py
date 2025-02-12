@@ -16,7 +16,8 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'email'  # Verwende E-Mail als primären Login
     REQUIRED_FIELDS = ['password']  # Hier 'username' beibehalten, auch wenn er optional ist
 
-    objects = CustomUserManager()  # Verknüpfe den CustomUserManager
+    objects = CustomUserManager()  # Verknüpfe den CustomUserManager 
+    #test
 
     def __str__(self):
         return self.email
