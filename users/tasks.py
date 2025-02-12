@@ -4,10 +4,14 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 
-env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(env_path)
+# env_path = Path(__file__).resolve().parent.parent / ".env"
+# load_dotenv(env_path)
+
+load_dotenv()
 
 FRONTEND_URL = os.getenv("FRONTEND_URL")
+
+
 
 
 def send_activation_email(user, uid, token):
