@@ -16,6 +16,7 @@ jobs:
       - name: Umgebungsvariablen setzen
         run: |
           echo "DEBUG=${{ secrets.DEBUG }}" >> $GITHUB_ENV
+          echo "DEBUG is set to ${{ secrets.DEBUG }}"
 
       - name: SSH Verbindung aufbauen und Deploy-Skript ausführen
         uses: appleboy/ssh-action@v1.0.3
@@ -24,7 +25,9 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |        
-            export DEBUG=${{ secrets.DEBUG }}    
+            echo "DEBUG in SSH Session: $DEBUG"
+            export DEBUG=${{ secrets.DEBUG }} 
+            echo "DEBUG variable is now: $DEBUG"   
             cd /home/oezkan/projects/videoflix_backend
             git pull origin main  # oder dein Branch
             source env/bin/activate  # Virtuelle Umgebung aktivieren
