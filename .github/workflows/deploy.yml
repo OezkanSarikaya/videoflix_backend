@@ -16,6 +16,9 @@ jobs:
       - name: Umgebungsvariablen setzen
         run: |
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
+          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Python-Umgebung einrichten
         uses: actions/setup-python@v4
