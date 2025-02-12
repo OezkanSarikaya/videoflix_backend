@@ -3,7 +3,7 @@ name: Deploy Backend
 on:
   push:
     branches:
-      - main  # oder dein Hauptbranch, falls er anders heißt
+      - main  # oder dein Hauptbranch, falls er anders heißt      
 
 jobs:
   deploy:
