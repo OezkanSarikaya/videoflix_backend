@@ -16,6 +16,8 @@ from datetime import timedelta  # import this library top of the settings.py fil
 import os
 
 print(f"DEBUG value from environment: {os.getenv('DEBUG')}")
+
+
 # import psycopg2
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
