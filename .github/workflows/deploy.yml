@@ -39,9 +39,9 @@ jobs:
           source env/bin/activate
           # Umgebungsvariablen explizit setzen
           export SECRET_KEY="${{ secrets.SECRET_KEY }}"
-          export DB_NAME="${{ secrets.DB_NAME }}"
-          export DB_USER="${{ secrets.DB_USER }}"
-          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          export DATABASE_NAME="${{ secrets.DATABASE_NAME }}"
+          export DATABASE_USER="${{ secrets.DATABASE_USER }}"
+          export DATABASE_PASSWORD="${{ secrets.DATABASE_PASSWORD }}"
           export FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
           export DEBUG="${{ secrets.DEBUG }}"  # DEBUG hinzufügen
           pytest --disable-warnings --maxfail=1
