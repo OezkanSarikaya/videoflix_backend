@@ -14,7 +14,7 @@ class CustomUser(AbstractUser):
     is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'  # Verwende E-Mail als primären Login
-    REQUIRED_FIELDS = ['username', 'password']  # Hier 'username' beibehalten, auch wenn er optional ist
+    REQUIRED_FIELDS = ['password']  # Hier 'username' beibehalten, auch wenn er optional ist
 
     objects = CustomUserManager()  # Verknüpfe den CustomUserManager
 
