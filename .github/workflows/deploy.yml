@@ -20,6 +20,7 @@ jobs:
           echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
           echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> $GITHUB_ENV
+          echo "DEBUG=${{ secrets.DEBUG }}" >> $GITHUB_ENV   # DEBUG hinzufügen
 
       - name: Python-Umgebung einrichten
         uses: actions/setup-python@v4
@@ -33,10 +34,17 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      # - name: Pytest ausführen
-      #   run: |
-      #     source env/bin/activate
-      #     pytest --disable-warnings --maxfail=1
+      - name: Pytest ausführen
+        run: |
+          source env/bin/activate
+          # Umgebungsvariablen explizit setzen
+          export SECRET_KEY="${{ secrets.SECRET_KEY }}"
+          export DB_NAME="${{ secrets.DB_NAME }}"
+          export DB_USER="${{ secrets.DB_USER }}"
+          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          export FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
+          export DEBUG="${{ secrets.DEBUG }}"  # DEBUG hinzufügen
+          pytest --disable-warnings --maxfail=1
 
   deploy:
     needs: test  # Deployment nur ausführen, wenn Tests erfolgreich sind
@@ -58,6 +66,7 @@ jobs:
             export DB_USER="${{ secrets.DB_USER }}"
             export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
             export FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
+            export DEBUG="${{ secrets.DEBUG }}"  # DEBUG hinzufügen
             cd /home/oezkan/projects/videoflix_backend
             git pull origin main
             source env/bin/activate
