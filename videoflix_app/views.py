@@ -10,9 +10,24 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Video, Genre, VideoProgress
 from .serializers import VideoSerializer, GenreWithVideosSerializer
 from rest_framework import status
+from django.http import FileResponse, Http404
+import os
 from django.shortcuts import get_object_or_404
 # from .permissions import IsAdminOrReadOnly
 from rest_framework import permissions
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+
+def serve_protected_media(request, path):
+    """Serviert Medien-Dateien nur für authentifizierte Nutzer"""
+    if not request.user.is_authenticated:
+        raise Http404("Du hast keinen Zugriff auf diese Datei.")
+
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    if not os.path.exists(file_path):
+        raise Http404("Datei nicht gefunden.")
+
+    return FileResponse(open(file_path, "rb"))
 
 
 class VideoCreateView(APIView):
