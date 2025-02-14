@@ -15,8 +15,6 @@ from dotenv import load_dotenv
 from datetime import timedelta  # import this library top of the settings.py file
 import os
 
-print(f"DEBUG Wert from environment: {os.getenv('DEBUG')}")
-
 
 # import psycopg2
 
@@ -25,6 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+
+DEMO_MEDIA_ROOT = os.path.join(BASE_DIR, "demo_media")
+DEMO_MEDIA_URL = "/demo_media/"
 
 # Lade Umgebungsvariablen aus der .env-Datei
 env_path = Path(__file__).resolve().parent.parent / ".env"
@@ -42,7 +43,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # DEBUG = os.getenv("DEBUG") == "True"
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "https://videoflix.oezkan-sarikaya.de/"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "https://videoflix.oezkan-sarikaya.de/", "videoflix-backend.oezkan-sarikaya.de"]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Nur zum Testen
 # Zum echten Versenden
