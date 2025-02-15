@@ -1,0 +1,35 @@
+server {
+  listen 80;
+   server_name videoflix-backend.oezkan-sarikaya.de;
+   rewrite ^ https://$server_name$request_uri? permanent;
+}
+
+server {
+    listen 443 default_server ssl;
+    server_name 127.0.0.1;
+    client_max_body_size 500M;
+    ssl_certificate /etc/letsencrypt/live/videoflix-backend.oezkan-sarikaya.de/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/videoflix-backend.oezkan-sarikaya.de/privkey.pem;
+    
+    location /static/ {
+        alias /home/oezkan/projects/videoflix_backend/staticfiles/;
+    }
+
+    location /media/ {
+    proxy_pass http://127.0.0.1:8000/media/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;proxy_pass http://127.0.0.1:8000/media/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        #alias /home/oezkan/projects/videoflix_backend/media/;
+    }
+
+    location /demo_media/ {
+        alias /home/oezkan/projects/videoflix_backend/demo_media/;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://127.0.0.1:8000;
+    }
+}

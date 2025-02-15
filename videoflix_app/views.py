@@ -17,12 +17,33 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.request import Request
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
-def serve_protected_media(request, path):
-    """Serviert Medien-Dateien nur für authentifizierte Nutzer"""
-    if not request.user.is_authenticated:
-        raise Http404("Du hast keinen Zugriff auf diese Datei.")
+# def serve_protected_media(request, path):
+#     """Serviert Medien-Dateien nur für authentifizierte Nutzer"""
+#     if not request.user.is_authenticated:
+#         raise Http404("Du hast keinen Zugriff auf diese Datei.")
 
+#     file_path = os.path.join(settings.MEDIA_ROOT, path)
+#     if not os.path.exists(file_path):
+#         raise Http404("Datei nicht gefunden.")
+
+#     return FileResponse(open(file_path, "rb"))
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def serve_protected_media(request: Request, path):
+    """Serviert Medien-Dateien nur für authentifizierte Nutzer mit JWT."""
+    
+    # Ist der User authentifiziert?
+    auth = JWTAuthentication()
+    user, _ = auth.authenticate(request)
+    if not user:
+        raise Http404("Nicht autorisiert")
+
+    # Datei-Pfad prüfen
     file_path = os.path.join(settings.MEDIA_ROOT, path)
     if not os.path.exists(file_path):
         raise Http404("Datei nicht gefunden.")
@@ -158,8 +179,10 @@ class VideoProgressListView(APIView):
                 "id": progress.video.id,
                 "title": progress.video.title,
                 "description": progress.video.description,
-                "video_file": request.build_absolute_uri(progress.video.video_file.url),
-                "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url),
+                # "video_file": request.build_absolute_uri(progress.video.video_file.url),
+                # "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url),
+                "video_file": progress.video.video_file.url,
+                "thumbnail": progress.video.thumbnail.url,
                 "progress": progress.progress,
             }
             for progress in user_progress

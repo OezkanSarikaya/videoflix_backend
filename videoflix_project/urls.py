@@ -21,16 +21,16 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from debug_toolbar.toolbar import debug_toolbar_urls
-from videoflix_app.views import serve_protected_media 
+from videoflix_app.views import serve_protected_media
 from django.contrib.auth.decorators import login_required
 
 
-urlpatterns =  [
-        path("admin/", admin.site.urls),
-        path("api/users/", include("users.urls")),
-        path("api/", include("videoflix_app.urls")),
-        path("django-rq/", include("django_rq.urls")),
-    ]
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/users/", include("users.urls")),
+    path("api/", include("videoflix_app.urls")),
+    path("django-rq/", include("django_rq.urls")),
+]
 
 # Debug-Modus: Medien direkt servieren
 if settings.DEBUG:
@@ -41,15 +41,20 @@ urlpatterns += static(settings.DEMO_MEDIA_URL, document_root=settings.DEMO_MEDIA
 
 # Geschützte Medien für nicht-DEBUG-Modus
 if not settings.DEBUG:
+    # urlpatterns += [
+    #     path("protected_media/<path:path>", login_required(serve_protected_media), name="protected_media"),
+    # ]
+
     urlpatterns += [
-        path("protected_media/<path:path>", login_required(serve_protected_media), name="protected_media"),
+        path(
+            "protected_media/<path:path>", serve_protected_media, name="protected_media"
+        ),
     ]
 
 # Debug Toolbar
 urlpatterns += debug_toolbar_urls()
 
 
-    # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    # + static(settings.DEMO_MEDIA_URL, document_root=settings.DEMO_MEDIA_ROOT)
-    # + debug_toolbar_urls()
-
+# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# + static(settings.DEMO_MEDIA_URL, document_root=settings.DEMO_MEDIA_ROOT)
+# + debug_toolbar_urls()

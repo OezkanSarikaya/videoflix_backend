@@ -27,6 +27,8 @@ MEDIA_URL = "/media/"
 DEMO_MEDIA_ROOT = os.path.join(BASE_DIR, "demo_media")
 DEMO_MEDIA_URL = "/demo_media/"
 
+
+
 # Lade Umgebungsvariablen aus der .env-Datei
 env_path = Path(__file__).resolve().parent.parent / ".env"
 if env_path.exists():
@@ -38,6 +40,7 @@ if env_path.exists():
 # SECURITY WARNING: keep the secret key used in production secret!
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+PROTECTED_MEDIA_URL = os.getenv("PROTECTED_MEDIA")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.getenv("DEBUG") == "True"

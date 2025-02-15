@@ -11,7 +11,7 @@ class Genre(models.Model):
     title = models.CharField(max_length=80)
 
     class Meta:
-        constraints = [UniqueConstraint(Lower("title"), name="unique_title_ci")]
+        constraints = [UniqueConstraint(Lower("title"), name="unique_title_ci_genre")]
 
     def __str__(self):
         return self.title 
@@ -24,6 +24,9 @@ class Video(models.Model):
     video_file = models.FileField(upload_to="videos", blank=True, null=True)
     thumbnail = models.FileField(upload_to="thumbnails", blank=True, null=True)
     genres = models.ManyToManyField(Genre, related_name="videos")
+
+    class Meta:
+        constraints = [UniqueConstraint(Lower("title"), name="unique_title_ci_video")]
 
     def __str__(self):
         return self.title
