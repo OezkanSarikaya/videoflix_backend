@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Video, Genre, VideoProgress
-from .serializers import VideoSerializer, GenreWithVideosSerializer
+from .serializers import VideoSerializer, GenreWithVideosSerializer, VideoProgressSerializer
 from rest_framework import status
 from django.http import FileResponse, Http404
 import os
@@ -164,29 +164,41 @@ class VideoProgressDetailView(APIView):
         return Response({"progress": progress.progress if progress else 0}, status=status.HTTP_200_OK)
 
 
+# class VideoProgressListView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, *args, **kwargs):
+#         # Hole alle Fortschritte des aktuellen Benutzers
+#         user_progress = VideoProgress.objects.filter(user=request.user).select_related(
+#             "video"
+#         )
+
+#         # Erstelle eine Liste mit den Video-Daten
+#         video_data = [
+#             {
+#                 "id": progress.video.id,
+#                 "title": progress.video.title,
+#                 "description": progress.video.description,
+#                 # "video_file": request.build_absolute_uri(progress.video.video_file.url),
+#                 # "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url),
+#                 "video_file": progress.video.video_file.url,
+#                 # "thumbnail": progress.video.thumbnail.url,
+#                 "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url).replace(settings.MEDIA_URL, ""),
+#                 "progress": progress.progress,
+#             }
+#             for progress in user_progress
+#         ]
+
+#         return Response(video_data, status=status.HTTP_200_OK)
+
 class VideoProgressListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         # Hole alle Fortschritte des aktuellen Benutzers
-        user_progress = VideoProgress.objects.filter(user=request.user).select_related(
-            "video"
-        )
+        user_progress = VideoProgress.objects.filter(user=request.user).select_related("video")
 
-        # Erstelle eine Liste mit den Video-Daten
-        video_data = [
-            {
-                "id": progress.video.id,
-                "title": progress.video.title,
-                "description": progress.video.description,
-                # "video_file": request.build_absolute_uri(progress.video.video_file.url),
-                # "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url),
-                "video_file": progress.video.video_file.url,
-                # "thumbnail": progress.video.thumbnail.url,
-                "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url).replace(settings.MEDIA_URL, ""),
-                "progress": progress.progress,
-            }
-            for progress in user_progress
-        ]
+        # Serialize die Daten
+        serializer = VideoProgressSerializer(user_progress, many=True)
 
-        return Response(video_data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
