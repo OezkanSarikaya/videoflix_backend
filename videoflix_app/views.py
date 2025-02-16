@@ -182,7 +182,8 @@ class VideoProgressListView(APIView):
                 # "video_file": request.build_absolute_uri(progress.video.video_file.url),
                 # "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url),
                 "video_file": progress.video.video_file.url,
-                "thumbnail": progress.video.thumbnail.url,
+                # "thumbnail": progress.video.thumbnail.url,
+                "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url).replace(settings.MEDIA_URL, ""),
                 "progress": progress.progress,
             }
             for progress in user_progress

@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     "django_rq",
     "import_export",
     "users",
+    'corsheaders',
     # 'videoflix_app',
 ]
 
@@ -135,7 +136,8 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:4200",
     "http://localhost:4200",
-    "https://videoflix.oezkan-sarikaya.de/",
+    "https://videoflix.oezkan-sarikaya.de",
+    "http://localhost:8000",  # Backend (local)
 ]
 
 CACHES = {
