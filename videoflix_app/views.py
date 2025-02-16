@@ -3,40 +3,33 @@
 # Create your views here.
 # videoflix_app/views.py
 from rest_framework import generics
-from rest_framework.viewsets import ModelViewSet
+
+# from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Video, Genre, VideoProgress
-from .serializers import VideoSerializer, GenreWithVideosSerializer, VideoProgressSerializer
+from .serializers import VideoSerializer, GenreWithVideosSerializer
 from rest_framework import status
 from django.http import FileResponse, Http404
 import os
 from django.shortcuts import get_object_or_404
-# from .permissions import IsAdminOrReadOnly
 from rest_framework import permissions
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+
+# from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.request import Request
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-# def serve_protected_media(request, path):
-#     """Serviert Medien-Dateien nur für authentifizierte Nutzer"""
-#     if not request.user.is_authenticated:
-#         raise Http404("Du hast keinen Zugriff auf diese Datei.")
+# from rest_framework import serializers
 
-#     file_path = os.path.join(settings.MEDIA_ROOT, path)
-#     if not os.path.exists(file_path):
-#         raise Http404("Datei nicht gefunden.")
-
-#     return FileResponse(open(file_path, "rb"))
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def serve_protected_media(request: Request, path):
     """Serviert Medien-Dateien nur für authentifizierte Nutzer mit JWT."""
-    
+
     # Ist der User authentifiziert?
     auth = JWTAuthentication()
     user, _ = auth.authenticate(request)
@@ -82,6 +75,7 @@ class VideoDeleteView(APIView):
         video.delete()  # Video löschen
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class VideoListView(generics.ListAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
@@ -90,39 +84,20 @@ class VideoListView(generics.ListAPIView):
     ]  # Nur authentifizierte Benutzer dürfen zugreifen
 
 
-# class VideoDetailView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request, id, format=None):
-#         try:
-#             video = Video.objects.get(id=id)  # Hole Video anhand der ID
-#             # Hier die Daten aus dem Video-Objekt formatieren
-#             data = {
-#                 "id": video.id,
-#                 "title": video.title,
-#                 "description": video.description,
-#                 "video_file": video.video_file.url,
-#                 "thumbnail": video.thumbnail.url,
-#                 "created_at": video.created_at,
-#             }
-#             return Response(data)
-#         except Video.DoesNotExist:
-#             return Response(
-#                 {"error": "Video not found"}, status=status.HTTP_404_NOT_FOUND
-#             )
-
 class VideoDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id, format=None):
-        video = get_object_or_404(Video, id=id)  # Holt das Video oder gibt automatisch 404 zurück
+        video = get_object_or_404(
+            Video, id=id
+        )  # Holt das Video oder gibt automatisch 404 zurück
 
         data = {
             "id": video.id,
             "title": video.title,
             "description": video.description,
-            "video_file": video.video_file.url if video.video_file else None,
-            "thumbnail": video.thumbnail.url if video.thumbnail else None,
+            "video_file": f"{settings.PROTECTED_MEDIA_URL}{video.video_file}",
+            "thumbnail": f"{settings.PROTECTED_MEDIA_URL}{video.thumbnail.name}",
             "created_at": video.created_at,
         }
         return Response(data)
@@ -158,47 +133,37 @@ class VideoProgressDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, video_id, *args, **kwargs):
-        video = get_object_or_404(Video, id=video_id)  # Holt das Video oder gibt 404 zurück
+        video = get_object_or_404(
+            Video, id=video_id
+        )  # Holt das Video oder gibt 404 zurück
         progress = VideoProgress.objects.filter(user=request.user, video=video).first()
 
-        return Response({"progress": progress.progress if progress else 0}, status=status.HTTP_200_OK)
+        return Response(
+            {"progress": progress.progress if progress else 0},
+            status=status.HTTP_200_OK,
+        )
 
-
-# class VideoProgressListView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request, *args, **kwargs):
-#         # Hole alle Fortschritte des aktuellen Benutzers
-#         user_progress = VideoProgress.objects.filter(user=request.user).select_related(
-#             "video"
-#         )
-
-#         # Erstelle eine Liste mit den Video-Daten
-#         video_data = [
-#             {
-#                 "id": progress.video.id,
-#                 "title": progress.video.title,
-#                 "description": progress.video.description,
-#                 # "video_file": request.build_absolute_uri(progress.video.video_file.url),
-#                 # "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url),
-#                 "video_file": progress.video.video_file.url,
-#                 # "thumbnail": progress.video.thumbnail.url,
-#                 "thumbnail": request.build_absolute_uri(progress.video.thumbnail.url).replace(settings.MEDIA_URL, ""),
-#                 "progress": progress.progress,
-#             }
-#             for progress in user_progress
-#         ]
-
-#         return Response(video_data, status=status.HTTP_200_OK)
 
 class VideoProgressListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         # Hole alle Fortschritte des aktuellen Benutzers
-        user_progress = VideoProgress.objects.filter(user=request.user).select_related("video")
+        user_progress = VideoProgress.objects.filter(user=request.user).select_related(
+            "video"
+        )
 
-        # Serialize die Daten
-        serializer = VideoProgressSerializer(user_progress, many=True)
+        # Erstelle eine Liste mit den Video-Daten
+        video_data = [
+            {
+                "id": progress.video.id,
+                "title": progress.video.title,
+                "description": progress.video.description,
+                "video_file": f"{settings.PROTECTED_MEDIA_URL}{progress.video.video_file.url}",
+                "thumbnail": f"{settings.PROTECTED_MEDIA_URL}{progress.video.thumbnail.name}",
+                "progress": progress.progress,
+            }
+            for progress in user_progress
+        ]
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(video_data, status=status.HTTP_200_OK)

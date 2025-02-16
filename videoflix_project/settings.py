@@ -27,6 +27,7 @@ MEDIA_URL = "/media/"
 DEMO_MEDIA_ROOT = os.path.join(BASE_DIR, "demo_media")
 DEMO_MEDIA_URL = "/demo_media/"
 
+PROTECTED_MEDIA_URL = os.getenv("PROTECTED_MEDIA")
 
 
 # Lade Umgebungsvariablen aus der .env-Datei
@@ -40,13 +41,18 @@ if env_path.exists():
 # SECURITY WARNING: keep the secret key used in production secret!
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-PROTECTED_MEDIA_URL = os.getenv("PROTECTED_MEDIA")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.getenv("DEBUG") == "True"
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "https://videoflix.oezkan-sarikaya.de/", "videoflix-backend.oezkan-sarikaya.de"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "https://videoflix.oezkan-sarikaya.de/",
+    "videoflix-backend.oezkan-sarikaya.de",
+]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Nur zum Testen
 # Zum echten Versenden
@@ -74,7 +80,7 @@ INSTALLED_APPS = [
     "django_rq",
     "import_export",
     "users",
-    'corsheaders',
+    "corsheaders",
     # 'videoflix_app',
 ]
 
@@ -119,7 +125,6 @@ RQ_QUEUES = {
         #     'ssl_cert_reqs': None,
         # },
     },
-
 }
 
 
