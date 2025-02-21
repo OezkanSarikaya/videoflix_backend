@@ -98,7 +98,7 @@ python manage.py rqworker
    python import_videos.py --delete --source external
    ```
 
-### 9. Add individual videos
+### 9. Add individual videos (upload)
 1. Go to the administration area (Superuser required)
 2. Navigate to `Videos` and click `Add`
 3. Fill in the title and description
