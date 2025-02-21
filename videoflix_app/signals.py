@@ -1,5 +1,4 @@
 import os
-from django.conf import settings
 from videoflix_app.tasks import convert720p, convert120p, convert360p, convert1080p
 from .models import Video
 from django.db.models.signals import post_save, post_delete
@@ -22,10 +21,10 @@ def video_post_save(sender, instance, created, **kwargs):
         if instance.video_file:
             video_path = os.path.normpath(instance.video_file.path)
             queue = django_rq.get_queue("default", autocommit=True)
-            # queue.enqueue(convert120p, video_path)
-            # queue.enqueue(convert360p, video_path)
+            queue.enqueue(convert120p, video_path)
+            queue.enqueue(convert360p, video_path)
             queue.enqueue(convert720p, video_path)
-            # queue.enqueue(convert1080p, video_path)
+            queue.enqueue(convert1080p, video_path)
         else:
             print(f"Fehler: Die Video-Datei für {instance.title} ist nicht vorhanden!")
 
@@ -36,10 +35,10 @@ def video_post_save(sender, instance, created, **kwargs):
         if instance.video_file:
             video_path = os.path.normpath(instance.video_file.path)
             queue = django_rq.get_queue("default", autocommit=True)
-            # queue.enqueue(convert120p, video_path)
-            # queue.enqueue(convert360p, video_path)
+            queue.enqueue(convert120p, video_path)
+            queue.enqueue(convert360p, video_path)
             queue.enqueue(convert720p, video_path)
-            # queue.enqueue(convert1080p, video_path)
+            queue.enqueue(convert1080p, video_path)
         else:
             print(
                 f"Fehler: Keine Video-Datei gefunden für das Update von {instance.title}"

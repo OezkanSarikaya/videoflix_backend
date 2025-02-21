@@ -2,26 +2,25 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .managers import CustomUserManager
 
-# Create your models here.
-
-
 class CustomUser(AbstractUser):
+    """
+    Custom user model that uses email as the unique identifier for authentication
+    instead of a username.
+    """
     email = models.EmailField(unique=True)
     username = models.CharField(
         max_length=255, unique=True, blank=True, null=True
-    )  # Optional für den User, wird aber durch E-Mail ersetzt
-    # custom = models.CharField(max_length=500, default="")
-    # address = models.CharField(max_length=150, default="")
-    # phone = models.CharField(max_length=25, default="")
+    )  # Optional field, replaced by email
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "email"  # Verwende E-Mail als primären Login
-    REQUIRED_FIELDS = [
-        "password"
-    ]  # Hier 'username' beibehalten, auch wenn er optional ist
+    USERNAME_FIELD = "email"  # Use email as the primary login field
+    REQUIRED_FIELDS = []  # No additional required fields
 
-    objects = CustomUserManager()  # Verknüpfe den CustomUserManager
+    objects = CustomUserManager()  # Link to the custom user manager
 
     def __str__(self):
+        """
+        Return the string representation of the user (email).
+        """
         return self.email

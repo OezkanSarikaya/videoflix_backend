@@ -5,14 +5,17 @@ from import_export import resources
 
 # Register your models here.
 
+
 class VideoResource(resources.ModelResource):
 
     class Meta:
-        model = Video  
+        model = Video
+
 
 @admin.register(Video)
 class VideoAdmin(ImportExportModelAdmin):
     pass
+
 
 admin.site.register(Genre)
 admin.site.register(VideoProgress)

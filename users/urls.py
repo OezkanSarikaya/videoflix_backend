@@ -3,7 +3,6 @@ from .views import UserRegistrationView, PasswordResetConfirmView, activate_acco
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
-    TokenVerifyView,
 )
 
 urlpatterns = [

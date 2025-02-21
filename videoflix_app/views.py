@@ -14,6 +14,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.request import Request
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def serve_protected_media(request: Request, path):

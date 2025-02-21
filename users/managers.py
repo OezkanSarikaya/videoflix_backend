@@ -1,13 +1,18 @@
 from django.contrib.auth.models import BaseUserManager
 
 class CustomUserManager(BaseUserManager):
+    """
+    Custom manager for user model where the email is the unique identifier
+    for authentication instead of usernames.
+    """
+
     def create_user(self, email, password=None, **extra_fields):
         """
-        Erstelle und gib ein benutzerdefiniertes Benutzerobjekt zurück
-        mit einer E-Mail-Adresse als Benutzername.
+        Create and return a regular user with an email and password.
         """
         if not email:
-            raise ValueError('Die E-Mail-Adresse muss angegeben werden')
+            raise ValueError("The email address must be provided")
+        
         email = self.normalize_email(email)
         user = self.model(email=email, username=email, **extra_fields)
         user.set_password(password)
@@ -16,9 +21,9 @@ class CustomUserManager(BaseUserManager):
 
     def create_superuser(self, email, password=None, **extra_fields):
         """
-        Erstelle und gib ein Superuser-Benutzerobjekt zurück.
+        Create and return a superuser with the given email and password.
         """
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
         
         return self.create_user(email, password, **extra_fields)

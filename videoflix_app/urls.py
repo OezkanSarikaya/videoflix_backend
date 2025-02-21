@@ -1,6 +1,4 @@
-# videoflix_app/urls.py
 from django.urls import path
-# from rest_framework.routers import DefaultRouter
 from .views import (
     VideoListView,
     GenreVideoListView,
@@ -10,17 +8,16 @@ from .views import (
     VideoProgressListView,
     VideoCreateView,
     VideoUpdateView,
-    VideoDeleteView
+    VideoDeleteView,
 )
 
 
 urlpatterns = [
-    path("videos/", VideoListView.as_view(), name="video_list"),  
+    path("videos/", VideoListView.as_view(), name="video_list"),
     path("videos/<int:id>/", VideoDetailView.as_view(), name="video_detail"),
-    path('videos/create/', VideoCreateView.as_view(), name='video_create'), 
-    path('videos/<int:id>/update/', VideoUpdateView.as_view(), name='video_update'), 
-    path('videos/<int:id>/delete/', VideoDeleteView.as_view(), name='video_delete'),
-    
+    path("videos/create/", VideoCreateView.as_view(), name="video_create"),
+    path("videos/<int:id>/update/", VideoUpdateView.as_view(), name="video_update"),
+    path("videos/<int:id>/delete/", VideoDeleteView.as_view(), name="video_delete"),
     path("genres/videos/", GenreVideoListView.as_view(), name="genre_video_list"),
     # Endpunkt zum Speichern des Fortschritts (POST-Anfrage)
     path("video-progress/", VideoProgressView.as_view(), name="video-progress"),

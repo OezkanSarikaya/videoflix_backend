@@ -1,11 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-# from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.core.mail import send_mail
-from django.conf import settings
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 # Falls du eine separate Task verwendest, um die E-Mail zu senden.
 from .tasks import send_activation_email
@@ -31,7 +27,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
 
         # Generiere den UID und Token
-        # uid = urlsafe_base64_encode(str(user.pk).encode()).decode()
         uid = urlsafe_base64_encode(str(user.pk).encode())
         token = default_token_generator.make_token(user)
 
