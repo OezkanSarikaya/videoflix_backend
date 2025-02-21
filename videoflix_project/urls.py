@@ -41,9 +41,6 @@ urlpatterns += static(settings.DEMO_MEDIA_URL, document_root=settings.DEMO_MEDIA
 
 # Geschützte Medien für nicht-DEBUG-Modus
 if not settings.DEBUG:
-    # urlpatterns += [
-    #     path("protected_media/<path:path>", login_required(serve_protected_media), name="protected_media"),
-    # ]
 
     urlpatterns += [
         path(
@@ -53,8 +50,3 @@ if not settings.DEBUG:
 
 # Debug Toolbar
 urlpatterns += debug_toolbar_urls()
-
-
-# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-# + static(settings.DEMO_MEDIA_URL, document_root=settings.DEMO_MEDIA_ROOT)
-# + debug_toolbar_urls()

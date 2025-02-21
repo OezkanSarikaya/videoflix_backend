@@ -15,9 +15,6 @@ from dotenv import load_dotenv
 from datetime import timedelta  # import this library top of the settings.py file
 import os
 
-
-# import psycopg2
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +23,6 @@ MEDIA_URL = "/media/"
 
 DEMO_MEDIA_ROOT = os.path.join(BASE_DIR, "demo_media")
 DEMO_MEDIA_URL = "/demo_media/"
-
 
 # Lade Umgebungsvariablen aus der .env-Datei
 env_path = Path(__file__).resolve().parent.parent / ".env"
@@ -125,9 +121,6 @@ RQ_QUEUES = {
         "PORT": 6379,
         "DB": 0,
         "DEFAULT_TIMEOUT": 360,
-        # 'REDIS_CLIENT_KWARGS': {    # Eventual additional Redis connection arguments
-        #     'ssl_cert_reqs': None,
-        # },
     },
 }
 
