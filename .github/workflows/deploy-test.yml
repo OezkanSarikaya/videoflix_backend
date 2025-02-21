@@ -6,12 +6,45 @@ on:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Setze Umgebungsvariablen mit den GitHub Secrets
+      - name: Set up environment variables
+        run: |
+          echo "DEBUG=${{ secrets.DEBUG }}" >> $GITHUB_ENV
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> $GITHUB_ENV
+          echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> $GITHUB_ENV
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> $GITHUB_ENV
+          echo "FFMPEG_PATH=${{ secrets.FFMPEG_PATH }}" >> $GITHUB_ENV
+          echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> $GITHUB_ENV
+          echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> $GITHUB_ENV
+          echo "EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}" >> $GITHUB_ENV
+          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> $GITHUB_ENV
+          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> $GITHUB_ENV
+          echo "DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }}" >> $GITHUB_ENV
+          echo "DJANGO_SETTINGS_MODULE=${{ secrets.DJANGO_SETTINGS_MODULE }}" >> $GITHUB_ENV
+          echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> $GITHUB_ENV
+          echo "IMPORT_VIDEO_SOURCE=${{ secrets.IMPORT_VIDEO_SOURCE }}" >> $GITHUB_ENV
+          echo "PROTECTED_MEDIA=${{ secrets.PROTECTED_MEDIA }}" >> $GITHUB_ENV
+
+      # Installiere Abhängigkeiten und führe die Tests aus
+      - name: Install dependencies and run tests
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          pytest --maxfail=1 --disable-warnings -q  # Hier kannst du zusätzliche Optionen hinzufügen
 
   deploy:
     runs-on: ubuntu-latest
-
+    needs: test  # Der Deploy-Prozess wird nur ausgeführt, wenn der Test-Job erfolgreich war
     steps:
-      - name: Checkout  Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: SSH and Pull Latest Code
@@ -23,24 +56,24 @@ jobs:
           script: |
             cd /home/oezkan/projects/videoflix_backend
             
+            # Sicherstellen, dass alle Änderungen im Repository übernommen werden
             git reset --hard
             git pull origin main
-            
-            cat > .env << EOF
-            DEBUG="${{ secrets.DEBUG }}"
-            SECRET_KEY="${{ secrets.SECRET_KEY }}"
-            DATABASE_NAME="${{ secrets.DATABASE_NAME }}"
-            DATABASE_USER="${{ secrets.DATABASE_USER }}"
-            DATABASE_PASSWORD="${{ secrets.DATABASE_PASSWORD }}"
-            FFMPEG_PATH="${{ secrets.FFMPEG_PATH }}"
-            EMAIL_HOST="${{ secrets.EMAIL_HOST }}"
-            EMAIL_PORT="${{ secrets.EMAIL_PORT }}"
-            EMAIL_USE_TLS="${{ secrets.EMAIL_USE_TLS }}"
-            EMAIL_HOST_USER="${{ secrets.EMAIL_HOST_USER }}"
-            EMAIL_HOST_PASSWORD="${{ secrets.EMAIL_HOST_PASSWORD }}"
-            DEFAULT_FROM_EMAIL="${{ secrets.DEFAULT_FROM_EMAIL }}"
-            DJANGO_SETTINGS_MODULE="${{ secrets.DJANGO_SETTINGS_MODULE }}"
-            FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
-            IMPORT_VIDEO_SOURCE="${{ secrets.IMPORT_VIDEO_SOURCE }}"
-            PROTECTED_MEDIA="${{ secrets.PROTECTED_MEDIA }}"
-            EOF
+
+            # Umgebungsvariablen aus GitHub Secrets in die .env-Datei schreiben
+            echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+            echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
+            echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
+            echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+            echo "FFMPEG_PATH=${{ secrets.FFMPEG_PATH }}" >> .env
+            echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> .env
+            echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> .env
+            echo "EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}" >> .env
+            echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+            echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
+            echo "DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }}" >> .env
+            echo "DJANGO_SETTINGS_MODULE=${{ secrets.DJANGO_SETTINGS_MODULE }}" >> .env
+            echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
+            echo "IMPORT_VIDEO_SOURCE=${{ secrets.IMPORT_VIDEO_SOURCE }}" >> .env
+            echo "PROTECTED_MEDIA=${{ secrets.PROTECTED_MEDIA }}" >> .env
