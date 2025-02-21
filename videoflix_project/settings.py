@@ -27,13 +27,15 @@ MEDIA_URL = "/media/"
 DEMO_MEDIA_ROOT = os.path.join(BASE_DIR, "demo_media")
 DEMO_MEDIA_URL = "/demo_media/"
 
-PROTECTED_MEDIA_URL = os.getenv("PROTECTED_MEDIA")
+
 
 
 # Lade Umgebungsvariablen aus der .env-Datei
 env_path = Path(__file__).resolve().parent.parent / ".env"
 if env_path.exists():
     load_dotenv(env_path)
+
+PROTECTED_MEDIA_URL = os.getenv("PROTECTED_MEDIA")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -91,7 +93,11 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
+    'DEFAULT_TIMEOUT': 600,
+   
 }
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000  # 500MB
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
@@ -135,14 +141,30 @@ INTERNAL_IPS = [
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:4200",
     "http://localhost:4200",
-    "https://videoflix.oezkan-sarikaya.de/",
+    "https://videoflix.oezkan-sarikaya.de",
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:4200",
-    "http://localhost:4200",
-    "https://videoflix.oezkan-sarikaya.de",
-    "http://localhost:8000",  # Backend (local)
+# CORS_ALLOWED_ORIGINS = [
+#     "http://127.0.0.1:4200", # Frontend
+#     "http://localhost:4200", # Frontend
+#     "https://videoflix.oezkan-sarikaya.de", # Frontend
+#     "http://localhost:8000",  # Backend (local)
+# ]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://videoflix\.oezkan-sarikaya\.de$",
+    r"^http://127\.0\.0\.1:4200$",
+    r"^http://localhost:4200$",
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Für JWT und Cookies
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'accept',
+    'Authorization',  # für JWT Token
+    'x-csrf-token',  # falls du CSRF-Token verwendest
+    # alle anderen Header, die du benötigst
 ]
 
 CACHES = {
