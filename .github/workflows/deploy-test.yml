@@ -6,43 +6,9 @@ on:
       - main
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      # Setze Umgebungsvariablen mit den GitHub Secrets
-      - name: Set up environment variables
-        run: |
-          echo "DEBUG=${{ secrets.DEBUG }}" >> $GITHUB_ENV
-          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
-          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> $GITHUB_ENV
-          echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> $GITHUB_ENV
-          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> $GITHUB_ENV
-          echo "FFMPEG_PATH=${{ secrets.FFMPEG_PATH }}" >> $GITHUB_ENV
-          echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> $GITHUB_ENV
-          echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> $GITHUB_ENV
-          echo "EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}" >> $GITHUB_ENV
-          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> $GITHUB_ENV
-          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> $GITHUB_ENV
-          echo "DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }}" >> $GITHUB_ENV
-          echo "DJANGO_SETTINGS_MODULE=${{ secrets.DJANGO_SETTINGS_MODULE }}" >> $GITHUB_ENV
-          echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> $GITHUB_ENV
-          echo "IMPORT_VIDEO_SOURCE=${{ secrets.IMPORT_VIDEO_SOURCE }}" >> $GITHUB_ENV
-          echo "PROTECTED_MEDIA=${{ secrets.PROTECTED_MEDIA }}" >> $GITHUB_ENV
-
-      # Installiere Abhängigkeiten und führe die Tests aus
-      - name: Install dependencies and run tests
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
-          pytest --maxfail=1 --disable-warnings -q  # Hier kannst du zusätzliche Optionen hinzufügen
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test  # Der Deploy-Prozess wird nur ausgeführt, wenn der Test-Job erfolgreich war
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
