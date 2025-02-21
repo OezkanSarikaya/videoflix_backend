@@ -16,9 +16,9 @@ jobs:
       - name: SSH and Pull Latest Code
         uses: appleboy/ssh-action@v1.2.1
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          host: "${{ secrets.SSH_HOST }}"
+          username: "${{ secrets.SSH_USER }}"
+          key: "${{ secrets.SERVER_SSH_KEY }}"
           script: |
             cd /home/oezkan/projects/videoflix_backend
             
@@ -26,20 +26,20 @@ jobs:
             git pull origin main
             
             cat > .env << EOF
-            DEBUG=${{ secrets.DEBUG }}
-            SECRET_KEY=${{ secrets.SECRET_KEY }}
-            DATABASE_NAME=${{ secrets.DATABASE_NAME }}
-            DATABASE_USER=${{ secrets.DATABASE_USER }}
-            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
-            FFMPEG_PATH=${{ secrets.FFMPEG_PATH }}
-            EMAIL_HOST=${{ secrets.EMAIL_HOST }}
-            EMAIL_PORT=${{ secrets.EMAIL_PORT }}
-            EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}
-            EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
-            EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
-            DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }}
-            DJANGO_SETTINGS_MODULE=${{ secrets.DJANGO_SETTINGS_MODULE }}
-            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
-            IMPORT_VIDEO_SOURCE=${{ secrets.IMPORT_VIDEO_SOURCE }}
-            PROTECTED_MEDIA=${{ secrets.PROTECTED_MEDIA }}
+            DEBUG="${{ secrets.DEBUG }}"
+            SECRET_KEY="${{ secrets.SECRET_KEY }}"
+            DATABASE_NAME="${{ secrets.DATABASE_NAME }}"
+            DATABASE_USER="${{ secrets.DATABASE_USER }}"
+            DATABASE_PASSWORD="${{ secrets.DATABASE_PASSWORD }}"
+            FFMPEG_PATH="${{ secrets.FFMPEG_PATH }}"
+            EMAIL_HOST="${{ secrets.EMAIL_HOST }}"
+            EMAIL_PORT="${{ secrets.EMAIL_PORT }}"
+            EMAIL_USE_TLS="${{ secrets.EMAIL_USE_TLS }}"
+            EMAIL_HOST_USER="${{ secrets.EMAIL_HOST_USER }}"
+            EMAIL_HOST_PASSWORD="${{ secrets.EMAIL_HOST_PASSWORD }}"
+            DEFAULT_FROM_EMAIL="${{ secrets.DEFAULT_FROM_EMAIL }}"
+            DJANGO_SETTINGS_MODULE="${{ secrets.DJANGO_SETTINGS_MODULE }}"
+            FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
+            IMPORT_VIDEO_SOURCE="${{ secrets.IMPORT_VIDEO_SOURCE }}"
+            PROTECTED_MEDIA="${{ secrets.PROTECTED_MEDIA }}"
             EOF
