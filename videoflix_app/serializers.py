@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Video, Genre, VideoProgress
+from .models import Video, Genre
 from django.conf import settings
 
 

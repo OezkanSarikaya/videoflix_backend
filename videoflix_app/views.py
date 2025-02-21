@@ -1,10 +1,4 @@
-# from django.shortcuts import render
-
-# Create your views here.
-# videoflix_app/views.py
 from rest_framework import generics
-
-# from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -16,14 +10,9 @@ import os
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from django.conf import settings
-
-# from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.request import Request
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
-# from rest_framework import serializers
-
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])

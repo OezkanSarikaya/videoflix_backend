@@ -28,8 +28,6 @@ DEMO_MEDIA_ROOT = os.path.join(BASE_DIR, "demo_media")
 DEMO_MEDIA_URL = "/demo_media/"
 
 
-
-
 # Lade Umgebungsvariablen aus der .env-Datei
 env_path = Path(__file__).resolve().parent.parent / ".env"
 if env_path.exists():
