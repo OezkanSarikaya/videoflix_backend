@@ -17,8 +17,7 @@ for video in Video.objects.prefetch_related('genres'):
         "title": video.title,
         "description": video.description,
         "video_file": video.video_file.name if video.video_file else None,
-        "thumbnail": video.thumbnail.name if video.thumbnail else None,
-        "created_at": str(video.created_at),
+        "thumbnail": video.thumbnail.name if video.thumbnail else None,    
         "genres": genres,
     }
     data.append(video_data)

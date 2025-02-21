@@ -10,9 +10,9 @@ class CustomUser(AbstractUser):
     username = models.CharField(
         max_length=255, unique=True, blank=True, null=True
     )  # Optional für den User, wird aber durch E-Mail ersetzt
-    custom = models.CharField(max_length=500, default="")
-    address = models.CharField(max_length=150, default="")
-    phone = models.CharField(max_length=25, default="")
+    # custom = models.CharField(max_length=500, default="")
+    # address = models.CharField(max_length=150, default="")
+    # phone = models.CharField(max_length=25, default="")
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 

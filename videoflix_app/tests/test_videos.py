@@ -3,6 +3,10 @@ from rest_framework import status
 from users.models import CustomUser
 from ..models import Video, Genre, VideoProgress
 from django.urls import reverse
+from django.utils.crypto import get_random_string
+
+def get_unique_title():
+    return f"Test Video {get_random_string(8)}"
 
 
 class VideoTests(APITestCase):
@@ -20,9 +24,12 @@ class VideoTests(APITestCase):
             email="user@example.com", password="userpassword", is_active=True
         )
 
+   
+        # unique_title = get_unique_title()
+
         # Erstelle ein Video (zum Testen)
         self.video_data = {
-            "title": "Test Video",
+            "title": get_unique_title(),
             "description": "Test description",
             "video_file": None,  # Optional, je nach deinem Modell
             "thumbnail": None,  # Optional, je nach deinem Modell
@@ -31,7 +38,7 @@ class VideoTests(APITestCase):
         self.genre = Genre.objects.create(title="Action")
 
         self.video = Video.objects.create(
-            title="Test Video",
+            title=get_unique_title(),
             description="Ein Testvideo",
             video_file="test.mp4",
             thumbnail="test.jpg",
@@ -165,7 +172,7 @@ class VideoTests(APITestCase):
     def test_update_video_authenticated(self):
         # Teste das Aktualisieren eines Videos als Admin
         video = Video.objects.create(**self.video_data)
-        update_data = {"title": "Updated Test Video"}
+        update_data = {"title": get_unique_title()}
         self.client.login(email="admin@example.com", password="adminpassword")
         response = self.client.put(
             f"{self.url}{video.id}/update/", update_data, format="json"
@@ -185,7 +192,7 @@ class VideoTests(APITestCase):
     def test_update_video_unauthenticated(self):
         # Teste das Aktualisieren eines Videos ohne Authentifizierung
         video = Video.objects.create(**self.video_data)
-        update_data = {"title": "Updated Test Video"}
+        update_data = {"title": get_unique_title()}
         response = self.client.put(
             f"{self.url}{video.id}/update/", update_data, format="json"
         )
@@ -194,7 +201,7 @@ class VideoTests(APITestCase):
     def test_update_video_regular_user(self):
         # Teste das Aktualisieren eines Videos als normaler Benutzer
         video = Video.objects.create(**self.video_data)
-        update_data = {"title": "Updated Test Video"}
+        update_data = {"title": get_unique_title()}
         self.client.login(email="user@example.com", password="userpassword")
         response = self.client.put(
             f"{self.url}{video.id}/update/", update_data, format="json"
