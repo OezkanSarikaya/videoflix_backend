@@ -87,8 +87,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
-    'DEFAULT_TIMEOUT': 600,
-   
+    "DEFAULT_TIMEOUT": 600,
 }
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000  # 500MB
@@ -151,10 +150,10 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 CORS_ALLOW_CREDENTIALS = True  # Für JWT und Cookies
 
 CORS_ALLOW_HEADERS = [
-    'content-type',
-    'accept',
-    'Authorization',  # für JWT Token
-    'x-csrf-token',  # falls du CSRF-Token verwendest
+    "content-type",
+    "accept",
+    "Authorization",  # für JWT Token
+    "x-csrf-token",  # falls du CSRF-Token verwendest
     # alle anderen Header, die du benötigst
 ]
 

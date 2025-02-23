@@ -1,8 +1,19 @@
+"""
+App configuration for the videoflix_app.
+"""
+
 from django.apps import AppConfig
 
+
 class VideoflixAppConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'videoflix_app'
+    """
+    Configuration class for the videoflix_app.
+    """
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "videoflix_app"
 
     def ready(self):
-        import videoflix_app.signals
+        """
+        Imports signals when the application is ready.
+        """
+        import videoflix_app.signals  # noqa: F401 (Verhindert unnötige Warnung)

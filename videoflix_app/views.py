@@ -18,69 +18,65 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def serve_protected_media(request: Request, path):
-    """Serviert Medien-Dateien nur für authentifizierte Nutzer mit JWT."""
+    """Serve media files only to authenticated users with JWT."""
 
-    # Ist der User authentifiziert?
+    # Authenticate the user
     auth = JWTAuthentication()
     user, _ = auth.authenticate(request)
     if not user:
-        raise Http404("Nicht autorisiert")
+        raise Http404("Unauthorized")
 
-    # Datei-Pfad prüfen
+    # Check file path
     file_path = os.path.join(settings.MEDIA_ROOT, path)
     if not os.path.exists(file_path):
-        raise Http404("Datei nicht gefunden.")
+        raise Http404("File not found.")
 
     return FileResponse(open(file_path, "rb"))
 
 
 class VideoCreateView(APIView):
-    permission_classes = [permissions.IsAdminUser]  # Nur Admins dürfen Videos erstellen
+    permission_classes = [permissions.IsAdminUser]  # Only admins can create videos
 
     def post(self, request, *args, **kwargs):
         serializer = VideoSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()  # Video erstellen
+            serializer.save()  # Create video
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VideoUpdateView(APIView):
-    permission_classes = [permissions.IsAdminUser]  # Nur Admins dürfen Videos updaten
+    permission_classes = [permissions.IsAdminUser]  # Only admins can update videos
 
     def put(self, request, id, *args, **kwargs):
         video = get_object_or_404(Video, id=id)
         serializer = VideoSerializer(video, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()  # Video aktualisieren
+            serializer.save()  # Update video
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VideoDeleteView(APIView):
-    permission_classes = [permissions.IsAdminUser]  # Nur Admins dürfen Videos löschen
+    permission_classes = [permissions.IsAdminUser]  # Only admins can delete videos
 
     def delete(self, request, id, *args, **kwargs):
         video = get_object_or_404(Video, id=id)
-        video.delete()  # Video löschen
+        video.delete()  # Delete video
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class VideoListView(generics.ListAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
-    permission_classes = [
-        IsAuthenticated
-    ]  # Nur authentifizierte Benutzer dürfen zugreifen
+    permission_classes = [IsAuthenticated]  # Only authenticated users can access
 
 
 class VideoDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id, format=None):
-        video = get_object_or_404(
-            Video, id=id
-        )  # Holt das Video oder gibt automatisch 404 zurück
+        video = get_object_or_404(Video, id=id)  # Retrieve video or return 404
 
         data = {
             "id": video.id,
@@ -102,15 +98,37 @@ class GenreVideoListView(APIView):
 
 class VideoProgressView(APIView):
     def post(self, request, *args, **kwargs):
-        # Überprüfen, ob der Fortschritt bereits existiert
+        # Get the video ID and the user from the request
         video_id = request.data.get("video")
         user = request.user
 
+        # Fetch the video object or return 404 if not found
         video = get_object_or_404(Video, id=video_id)
+
+        # Get or create VideoProgress object
         progress, created = VideoProgress.objects.get_or_create(user=user, video=video)
 
-        # Speichern des Fortschritts
-        progress.progress = request.data.get("progress", 0)
+        # Get the progress value from the request data
+        progress_value = request.data.get("progress", 0)
+
+        try:
+            # Attempt to convert progress_value to an integer
+            progress_value = int(progress_value)
+        except ValueError:
+            return Response(
+                {"error": "Progress must be a valid integer."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Validate that the progress value is between 0 and 100
+        if not (0 <= progress_value <= 100):
+            return Response(
+                {"error": "Progress must be between 0 and 100."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Save the progress
+        progress.progress = progress_value
         progress.save()
 
         return Response(
@@ -123,9 +141,7 @@ class VideoProgressDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, video_id, *args, **kwargs):
-        video = get_object_or_404(
-            Video, id=video_id
-        )  # Holt das Video oder gibt 404 zurück
+        video = get_object_or_404(Video, id=video_id)  # Retrieve video or return 404
         progress = VideoProgress.objects.filter(user=request.user, video=video).first()
 
         return Response(
@@ -138,12 +154,12 @@ class VideoProgressListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        # Hole alle Fortschritte des aktuellen Benutzers
+        # Retrieve all progress for the current user
         user_progress = VideoProgress.objects.filter(user=request.user).select_related(
             "video"
         )
 
-        # Erstelle eine Liste mit den Video-Daten
+        # Create a list with video data
         video_data = [
             {
                 "id": progress.video.id,

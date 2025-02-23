@@ -11,7 +11,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.forms import SetPasswordForm
 from django.http import JsonResponse, HttpResponse
 from django.conf import settings
-# from django.db import IntegrityError
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.response import Response
@@ -21,7 +20,9 @@ from rest_framework.views import APIView
 from .serializers import UserRegistrationSerializer
 
 User = get_user_model()
-FRONTEND_URL = os.getenv("FRONTEND_URL", "").rstrip("/")  # Sicherstellen, dass kein doppelter `/` entsteht
+FRONTEND_URL = os.getenv("FRONTEND_URL", "").rstrip(
+    "/"
+)  # Ensure that no double `/` is created
 
 
 def activate_account(request, uidb64, token):
@@ -46,16 +47,22 @@ class UserRegistrationView(APIView):
     """
     API endpoint for user registration.
     """
+
     permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Account successfully created."}, status=status.HTTP_201_CREATED)
+            return Response(
+                {"message": "Account successfully created."},
+                status=status.HTTP_201_CREATED,
+            )
 
         if User.objects.filter(email=request.data.get("email")).exists():
-            return Response({"detail": "Email already registered."}, status=status.HTTP_409_CONFLICT)
+            return Response(
+                {"detail": "Email already registered."}, status=status.HTTP_409_CONFLICT
+            )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -64,6 +71,7 @@ class PasswordResetRequestView(APIView):
     """
     API endpoint to request a password reset.
     """
+
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -71,27 +79,37 @@ class PasswordResetRequestView(APIView):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return Response({"detail": "No user found with this email address."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "No user found with this email address."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         uid = urlsafe_base64_encode(str(user.pk).encode())
         token = default_token_generator.make_token(user)
         reset_link = f"{FRONTEND_URL}/reset-password/{uid}/{token}/"
 
         subject = "Password Reset Request"
-        html_message = render_to_string("password_reset_email.html", {"user": user, "reset_link": reset_link})
+        html_message = render_to_string(
+            "password_reset_email.html", {"user": user, "reset_link": reset_link}
+        )
         plain_message = strip_tags(html_message)
 
-        email_msg = EmailMultiAlternatives(subject, plain_message, settings.DEFAULT_FROM_EMAIL, [user.email])
+        email_msg = EmailMultiAlternatives(
+            subject, plain_message, settings.DEFAULT_FROM_EMAIL, [user.email]
+        )
         email_msg.attach_alternative(html_message, "text/html")
         email_msg.send()
 
-        return Response({"message": "Password reset link has been sent!"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Password reset link has been sent!"}, status=status.HTTP_200_OK
+        )
 
 
 class PasswordResetConfirmView(APIView):
     """
     API endpoint to confirm password reset using a token.
     """
+
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
@@ -100,7 +118,10 @@ class PasswordResetConfirmView(APIView):
         """
         user = self._get_user(uidb64)
         if not user or not default_token_generator.check_token(user, token):
-            return Response({"detail": "Token is invalid or expired."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Token is invalid or expired."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return Response({"detail": "Token is valid."}, status=status.HTTP_200_OK)
 
     def post(self, request, uidb64, token):
@@ -109,12 +130,17 @@ class PasswordResetConfirmView(APIView):
         """
         user = self._get_user(uidb64)
         if not user or not default_token_generator.check_token(user, token):
-            return Response({"detail": "Token is invalid or expired."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Token is invalid or expired."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         form = SetPasswordForm(user, data=request.data)
         if form.is_valid():
             form.save()
-            return Response({"detail": "Password successfully reset."}, status=status.HTTP_200_OK)
+            return Response(
+                {"detail": "Password successfully reset."}, status=status.HTTP_200_OK
+            )
 
         return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
