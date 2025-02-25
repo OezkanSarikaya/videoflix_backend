@@ -44,3 +44,6 @@ jobs:
             echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
             echo "IMPORT_VIDEO_SOURCE=${{ secrets.IMPORT_VIDEO_SOURCE }}" >> .env
             echo "PROTECTED_MEDIA=${{ secrets.PROTECTED_MEDIA }}" >> .env
+
+             # Supervisor neu starten
+            sudo systemctl restart supervisor
