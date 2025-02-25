@@ -31,10 +31,15 @@ jobs:
         run: |
           echo "DJANGO_SETTINGS_MODULE=videoflix_project.test_settings" >> $GITHUB_ENV
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+          echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> $GITHUB_ENV
 
       - name: Run Migrations
         run: |
           python manage.py migrate
+      
+      - name: Start Redis
+        run: |
+          sudo systemctl start redis || docker run -d -p 6379:6379 redis
 
       - name: Run Tests
         run: |
