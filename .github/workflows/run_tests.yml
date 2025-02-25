@@ -46,6 +46,7 @@ jobs:
         run: |
           echo "DJANGO_SETTINGS_MODULE=videoflix_project.settings" >> $GITHUB_ENV
           echo "DATABASE_URL=sqlite:///db.sqlite3" >> $GITHUB_ENV
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
 
       - name: Run Migrations
         run: |
