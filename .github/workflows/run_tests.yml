@@ -36,6 +36,10 @@ jobs:
       - name: Run Migrations
         run: |
           python manage.py migrate
+      
+      - name: Start Redis
+        run: |
+          sudo systemctl start redis || docker run -d -p 6379:6379 redis
 
       - name: Run Tests
         run: |
