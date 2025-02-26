@@ -5,6 +5,9 @@ Tasks for sending emails related to user authentication.
 from django.core.mail import send_mail
 from django.conf import settings
 from dotenv import load_dotenv
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
 import os
 
 # Load environment variables
@@ -25,8 +28,16 @@ def send_activation_email(user, uid, token):
     if not FRONTEND_URL:
         raise ValueError("FRONTEND_URL is not set in the environment variables.")
 
+ 
     activation_link = f"{FRONTEND_URL}activate/?uid={uid}&token={token}"
+    html_message = render_to_string(
+            "activate_account_email.html", {"user": user, "activation_link": activation_link}
+        )
+    
+    plain_message = strip_tags(html_message)  # Entfernt HTML-Tags für die Plaintext-Version
     subject = "Activate your account"
-    message = f"Hi {user.email},\n\nPlease click the link below to activate your account:\n{activation_link}"
+    email = EmailMultiAlternatives(subject, plain_message, settings.DEFAULT_FROM_EMAIL, [user.email])
+    email.attach_alternative(html_message, "text/html")  # HTML-Version anhängen
 
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+    # Senden der E-Mail
+    email.send()   

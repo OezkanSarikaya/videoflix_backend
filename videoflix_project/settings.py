@@ -51,6 +51,8 @@ ALLOWED_HOSTS = [
 ]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Nur zum Testen
+# EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+# EMAIL_FILE_PATH = "/tmp/django-emails" 
 # Zum echten Versenden
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = os.getenv("EMAIL_PORT")
@@ -96,8 +98,8 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
     "SLIDING_TOKEN_LIFETIME": timedelta(days=30),
-    "SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER": timedelta(days=1),
-    "SLIDING_TOKEN_LIFETIME_LATE_USER": timedelta(days=30),
+    # "SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER": timedelta(days=1),
+    # "SLIDING_TOKEN_LIFETIME_LATE_USER": timedelta(days=30),
 }
 
 AUTH_USER_MODEL = "users.CustomUser"
